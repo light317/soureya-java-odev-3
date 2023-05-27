@@ -79,14 +79,15 @@ public class Colony {
     }
 
     public int ReduceFoodByPercentage(int percentage){
-        int amountToBeReduced = (int)(FoodAmount * (percentage/100));
+        System.out.println()
+        int amountToBeReduced = (int)(FoodAmount * (float)(percentage/100));
         DecreaseFood(amountToBeReduced);
 
         return amountToBeReduced;
     }
 
     public int ReducePopulationByPercentage(int percentage){
-        int amountToBeReduced = (int)(Population * (percentage/100));
+        int amountToBeReduced = (int)(Population * (float)(percentage/100));
         DecreasePopulation(amountToBeReduced);
 
         return amountToBeReduced;
