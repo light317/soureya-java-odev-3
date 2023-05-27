@@ -8,23 +8,21 @@ public class Game {
     static List<Character> AvailableSymbols = new ArrayList<Character>(Arrays.asList('A','~','X','&','<','>','?','#','@','%','$','0','5'));
     static int NumberOfRounds = 0;
     static List<Colony> Colonies = new ArrayList<Colony>();
-
-    public void Game(List<Integer> colonyPopulations){
-
+    static List<Integer> ColonyPopulations = new ArrayList<Integer>();
+    
+    public Game(List<Integer> colonyPopulations){
+            ColonyPopulations = colonyPopulations;
     }
 
-    public static void main(String[] args)  
+    public static void Run()  
     {
-        if (args.length == 0)
-        {
-            System.out.println("Usage programName colonyPopulation colonyPopulation colonyPopulation ... ");
-        }else
-        {
+        
             //Generate a colony for each given population
-            for(int i = 0; i < args.length; i++){
-                Colonies.add(GenerateColony(GetPopulation(args[i])));
+            for(Integer populationCount : ColonyPopulations){
+                Colonies.add(GenerateColony(populationCount));
+
             }
-            
+           
 			//Keep the simulation going until only one colony is alive
             while(GetNumberOfLivingColonies() > 1){
 
@@ -40,7 +38,7 @@ public class Game {
 			//Show who won.
             PrintState();
         }
-    }
+    
 
     private static void Battle(){
         for(int i = 0; i < Colonies.size();i++){
@@ -59,6 +57,8 @@ public class Game {
 
     private static void Fight(Colony firstColony, Colony secondColony)
     {
+        System.out.println(firstColony.GetSymbol() + " - " + firstColony.WarTactic.GetStrength()+ " is fighting " + secondColony.GetSymbol()+" - " + secondColony.WarTactic.GetStrength());
+
         int powerDifference = firstColony.WarTactic.GetStrength() - secondColony.WarTactic.GetStrength();
 
             //  less than 0 meaning second colony is stronger
@@ -90,30 +90,41 @@ public class Game {
 
                 	if(randomIndex > 50 ){
                     
-                    CalculateFightEffect(firstColony, secondColony, powerDifference);
+                        CalculateFightEffect(firstColony, secondColony, powerDifference);
                     }
 					else{
                         
-                            CalculateFightEffect(secondColony, firstColony, powerDifference);
-                    	}
+                        CalculateFightEffect(secondColony, firstColony, powerDifference);
+                    }
 					}
                 }
     }
 
     private static void CalculateFightEffect(Colony winner, Colony loser, int powerDifference){
+        System.out.println(winner.GetSymbol() + " WINS.");
+
+        int powerDifferencePercentage = GetPowerDifferancePercentage(Math.abs(powerDifference));
+        System.out.println("Power : "+powerDifference);
+
+        System.out.println("Power percentage: "+powerDifferencePercentage);
+        
         winner.IncrementWins();
         loser.IncrementLosses();
 
-        winner.IncreasePopulation(10);
-        loser.DecreasePopulation(10);
+        int foodFromLoser = loser.ReduceFoodByPercentage(powerDifferencePercentage);
+        winner.IncreaseFood(foodFromLoser);
+
+        loser.ReducePopulationByPercentage(powerDifferencePercentage);
 
         if(ShouldColonyDie(loser)){
+            System.out.println(loser.GetSymbol() + " Eleminated.");
+
             loser.Kill();
         }
     }
 
     private static int GetPowerDifferancePercentage(int powerDifference){
-        return (int)((powerDifference/1000)*100);
+        return (int)((powerDifference/10));
     }
 
     private static boolean ShouldColonyDie(Colony colony){
@@ -142,10 +153,7 @@ public class Game {
         return symbol;
     }
 
-    private static int GetPopulation(String input)
-    {
-        return Integer.parseInt(input);
-    }
+  
 
     private static Production GetRandomProduction(){
         Random rand = new Random();

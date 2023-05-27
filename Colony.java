@@ -85,6 +85,13 @@ public class Colony {
         return amountToBeReduced;
     }
 
+    public int ReducePopulationByPercentage(int percentage){
+        int amountToBeReduced = (int)(Population * (percentage/100));
+        DecreasePopulation(amountToBeReduced);
+
+        return amountToBeReduced;
+    }
+
     public boolean IsAlive()
     {
         return IsAlive;
